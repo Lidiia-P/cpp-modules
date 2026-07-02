@@ -12,7 +12,7 @@ class Span {
 		unsigned int		_maxSize;
 		std::vector<int>	_values;
 	public:
-		Span() : _maxSize(0) {};
+		Span() = default;
 		Span(unsigned int num) : _maxSize(num) {};
 		Span(const Span& other);
 
@@ -21,6 +21,22 @@ class Span {
 		~Span() = default;
 
 		void addNumber(int n);
+		unsigned int shortestSpan() const;
+		unsigned int longestSpan() const;
+
+		template <typename It>
+		void	addRange(It begin, It end){
+			auto diff = std::distance(begin, end);
+			if (diff < 0)
+				throw std::runtime_error("Invalid range");
+
+			if (_values.size() + diff > _maxSize)
+				throw std::runtime_error("Not enough space");
+
+			_values.insert(_values.end(), begin, end);
+		}
+
+		const std::vector<int> getValues() { return _values; };
 };
 
 #endif
