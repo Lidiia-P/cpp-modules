@@ -3,8 +3,8 @@ GREEN = \033[1;32m
 YELLOW = \033[0;33m
 RESET = \033[0m
 
-NAME = bitcoin
-SRC = main.cpp Bureaucrat.cpp
+NAME = btc
+SRC = main.cpp BitcoinExchange.cpp
 CPP = c++
 CFLAGS = -Wall -Wextra -Werror 
 CFLAGS += -std=c++17

@@ -1,12 +1,20 @@
 #ifndef CLASS_BITCOINEXCHANGE_HPP
 # define CLASS_BITCOINEXCHANGE_HPP
-# include <iostream>
-# include <string>
-# include <exception>
+
+# include <map>
 
 class BitcoinExchange {
 	private: 
+		std::map<std::string, double>	_rates;
 
+		// Member functions
+		void	processLine(const std::string &line) const;
+		bool	splitInputLine(const std::string &line, std::string &date, std::string &valueStr) const ;
+		std::string	trim(const std::string &str) const;
+		bool	parseValue(const std::string &valueStr, double &value) const;
+		bool	isValidDate(const std::string &date) const;
+		double	getRateForDate(const std::string &date) const;
+		
 	public:
 		// Constractors
 		BitcoinExchange(void) = default;
@@ -19,9 +27,9 @@ class BitcoinExchange {
 		~BitcoinExchange(void) = default;
 
 		// Member functions
+		void	loadDatabase(const std::string &databaseFile);
+		void	processInputFile(const std::string &inputFile) const;
 
-
-		// Exceptions
 
 };
 
