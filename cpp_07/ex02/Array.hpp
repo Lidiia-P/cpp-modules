@@ -4,10 +4,6 @@
 # include <string>
 # include <cstdlib>
 
-# define BLUE_B "\033[1;34m"
-# define MAGENTA "\033[0;35m"
-# define RESET "\033[0m"
-
 template <typename T>
 class Array {
 	private:
