@@ -1,11 +1,19 @@
 #ifndef CLASS_RPN_HPP
 # define CLASS_RPN_HPP
 
-// # include <map>
+# include <stack>
+
+enum Operator {
+	MULT,
+	DIV,
+	PlUS,
+	MINUS,
+	UNKNOWN
+};
 
 class RPN {
 	private:
-		
+		std::stack<int>	_data;
 	public:
 		// Constractors
 		RPN(void) = default;
@@ -18,7 +26,8 @@ class RPN {
 		~RPN(void) = default;
 
 		// Member functions
-
+		void pushStack(char **input);
+		Operator stringToEnum(const std::string &input);
 
 
 };

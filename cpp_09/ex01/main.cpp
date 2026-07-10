@@ -3,14 +3,15 @@
 
 int main(int argc, char **argv)
 {
-	if (argc != 2)
+	(void)argv;
+	if (argc < 2)
 	{
-		std::cout << "Invalid input! \n";
+		std::cout << "Invalid input!\n";
 		return 1;
 	}
-
+	RPN rpn;
 	try {
-		
+		rpn.pushStack(argv);
 		
 	}
 	catch(const std::exception &e) {
