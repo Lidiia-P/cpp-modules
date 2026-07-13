@@ -4,15 +4,15 @@
 int main(int argc, char **argv)
 {
 	(void)argv;
-	if (argc < 2)
+	if (argc != 2)
 	{
-		std::cout << "Invalid input!\n";
+		std::cout << "Invalid input! Usage: ./name \"expression\"\n";
 		return 1;
 	}
+
 	RPN rpn;
 	try {
-		rpn.pushStack(argv);
-		
+		rpn.calculate(argv[1]);
 	}
 	catch(const std::exception &e) {
 		std::cerr << e.what() << std::endl;

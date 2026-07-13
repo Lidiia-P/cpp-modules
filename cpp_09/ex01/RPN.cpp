@@ -16,40 +16,60 @@
 Operator RPN::stringToEnum(const std::string &input) {
 	if (input == "*") return MULT;
 	if (input == "/") return DIV;
-	if (input == "+") return PlUS;
+	if (input == "+") return PLUS;
 	if (input == "-") return MINUS;
 	return UNKNOWN;
 }
 
-// Operator op = stringToEnum();
+void RPN::process(const std::string &input) {
 
-// 	switch (op)
-// 	{
-// 	case MULT:
-		
-// 		break;
-// 	case DIV:
-		
-// 		break;
-// 	case PlUS:
+	if (_data.size() < 2)
+		throw std::runtime_error("Error");
+	Operator op = stringToEnum(input);
 
-// 		break;
-// 	case MINUS:
-		
-// 		break;
-// 	case UNKNOWN:
-// 		throw std::runtime_error("Error");
-// 	}
+	int left = _data.top();
+	_data.pop();
+	int right = _data.top();
+	_data.pop();
 
-void RPN::pushStack(char **input) {
-	std::cout << "size: " << sizeof(input) << std::endl;
-	
-	for (int i = sizeof(input) - 1; i > 0; i-- )
+	switch (op)
 	{
-		_data.push(atoi(input[i]));
-		std::cout << "std::stack: " << _data.top() << std::endl;
+	case MULT:
+		_data.push(right * left);
+		break;
+	case DIV:
+		if (left == 0)
+			throw std::runtime_error("Division by zero");
+		_data.push(right / left);
+		break;
+	case PLUS:
+		_data.push(right + left);
+		break;
+	case MINUS:
+		_data.push(right - left);
+		break;
+	case UNKNOWN:
+		throw std::runtime_error("Error");
 	}
 }
 
-// -------------------- MEMBER FUNCTIONS PRIVATE --------------------
+void RPN::calculate(const std::string &input) {
+	
+	std::istringstream	iss(input);
+	std::string			token;
 
+	while (iss >> token)
+	{
+		if ((token.size() == 1 && token[0] >= '0' && token[0] <= '9'))
+			_data.push(token[0] - '0');
+		else if (stringToEnum(token) != UNKNOWN)
+			process(token);
+		else
+			throw std::runtime_error("Error");
+	}
+
+	if (_data.size() != 1)
+		throw std::runtime_error("Invalid expression");
+
+	std::cout << _data.top() << std::endl;
+}

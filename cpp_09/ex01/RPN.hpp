@@ -6,7 +6,7 @@
 enum Operator {
 	MULT,
 	DIV,
-	PlUS,
+	PLUS,
 	MINUS,
 	UNKNOWN
 };
@@ -26,7 +26,8 @@ class RPN {
 		~RPN(void) = default;
 
 		// Member functions
-		void pushStack(char **input);
+		void calculate(const std::string &input);
+		void process(const std::string &input);
 		Operator stringToEnum(const std::string &input);
 
 
