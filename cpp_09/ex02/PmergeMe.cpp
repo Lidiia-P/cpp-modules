@@ -6,92 +6,195 @@
 #include <iostream>
 #include "PmergeMe.hpp"
 
-// 3, 5, 9, 7, 4
+static std::vector<Pair> makePairs(const std::vector<int>& input,
+								bool& hasStraggler,
+								int& straggler);
+static std::vector<int> extractWinners(const std::vector<Pair>& pairs);
+static std::vector<Pair> orderPairsByWinners(const std::vector<Pair>& pairs,
+											const std::vector<int>& sortedWinners);
+static void buildMainAndPend(const std::vector<Pair>& orderedPairs,
+								std::vector<int>& mainChain,
+								std::vector<PendNode>& pend,
+								bool hasStraggler,
+								int straggler);
+static std::vector<std::size_t> buildInsertionOrder(std::size_t pendSize);
+static void insertPend(std::vector<int>& mainChain,
+						const std::vector<PendNode>& pend,
+						const std::vector<std::size_t>& order);
+
+// }
+
+
+// -------------------- MEMBER FUNCTIONS PRIVATE --------------------
+
+std::vector<int> PmergeMe::fordJohnsonVector(const std::vector<int>& input) {
+	if (input.size() <= 1)
+		return input;
+
+	bool hasStraggler;
+	int straggler;
+	std::vector<Pair> pairs = makePairs(input, hasStraggler, straggler);
+
+	std::vector<int> winners = extractWinners(pairs);
+	std::vector<int> sortedWinners = fordJohnsonVector(winners);
+
+	std::vector<Pair> orderedPairs = orderPairsByWinners(pairs, sortedWinners);
+
+	std::vector<int> mainChain;
+	std::vector<PendNode> pend;
+	buildMainAndPend(orderedPairs, mainChain, pend, hasStraggler, straggler);
+
+	std::vector<std::size_t> order = buildInsertionOrder(pend.size());
+	insertPend(mainChain, pend, order);
+
+	return mainChain;
+}
+
 
 // -------------------- MEMBER FUNCTIONS PUBLIC --------------------
 
-// int binarySearch(vector<int> &arr, int low, int high, int x) {
-//     if (high >= low) {
-//         int mid = low + (high - low) / 2;
 
-//         // If the element is present at the middle
-//         // itself
-//         if (arr[mid] == x)
-//             return mid;
+void PmergeMe::sortVector(std::vector<int>& arr) {
+	_sortedVector = fordJohnsonVector(arr);
+}
 
-//         // If element is smaller than mid, then
-//         // it can only be present in left subarray
-//         if (arr[mid] > x)
-//             return binarySearch(arr, low, mid - 1, x);
+static std::vector<Pair> makePairs(const std::vector<int>& input,
+								bool& hasStraggler,
+								int& straggler) {
+	std::vector<Pair> pairs;
+	hasStraggler = false;
+	straggler = 0;
 
-//         // Else the element can only be present
-//         // in right subarray
-//         return binarySearch(arr, mid + 1, high, x);
-//     }
-//   return -1;
-// }
+	for (std::size_t i = 0; i + 1 < input.size(); i += 2) {
+		Pair p;
+		if (input[i] < input[i + 1]) {
+			p.small = input[i];
+			p.large = input[i + 1];
+		} else {
+			p.small = input[i + 1];
+			p.large = input[i];
+		}
+		pairs.push_back(p);
+	}
 
-void PmergeMe::sortVector(std::vector<int> &arr) {
-	if (arr.size() <= 1) {
-		_sortedVector = arr;
+	if (input.size() % 2 != 0) {
+		hasStraggler = true;
+		straggler = input.back();
+	}
+	return pairs;
+}
+
+static std::vector<int> extractWinners(const std::vector<Pair>& pairs) {
+	std::vector<int> winners;
+	for (std::size_t i = 0; i < pairs.size(); ++i)
+		winners.push_back(pairs[i].large);
+	return winners;
+}
+
+static std::vector<Pair> orderPairsByWinners(const std::vector<Pair>& pairs,
+											const std::vector<int>& sortedWinners) {
+	std::vector<Pair> orderedPairs;
+	std::vector<bool> used(pairs.size(), false);
+
+	for (std::size_t i = 0; i < sortedWinners.size(); ++i) {
+		for (std::size_t j = 0; j < pairs.size(); ++j) {
+			if (!used[j] && pairs[j].large == sortedWinners[i]) {
+				orderedPairs.push_back(pairs[j]);
+				used[j] = true;
+				break;
+			}
+		}
+	}
+	return orderedPairs;
+}
+
+static void buildMainAndPend(const std::vector<Pair>& orderedPairs,
+								std::vector<int>& mainChain,
+								std::vector<PendNode>& pend,
+								bool hasStraggler,
+								int straggler) {
+	mainChain.clear();
+	pend.clear();
+
+	if (orderedPairs.empty()) {
+		if (hasStraggler)
+			mainChain.push_back(straggler);
 		return;
 	}
 
-	std::vector<Pair> pairs;
-	bool hasLeftover = false;
-	int leftover = 0;
+	mainChain.push_back(orderedPairs[0].small);
+	mainChain.push_back(orderedPairs[0].large);
 
-	std::size_t i = 0;
-	while (i + 1 < arr.size()) {
-		int left = arr[i];
-		int right = arr[i + 1];
+	for (std::size_t i = 1; i < orderedPairs.size(); ++i) {
+		mainChain.push_back(orderedPairs[i].large);
 
-		Pair p;
-		if (left < right) {
-			p.small = left;
-			p.large = right;
-		} else {
-			p.small = right;
-			p.large = left;
-		}
-		pairs.push_back(p);
-		i += 2;
+		PendNode node;
+		node.small = orderedPairs[i].small;
+		node.partnerLarge = orderedPairs[i].large;
+		pend.push_back(node);
 	}
 
-	if (i < arr.size()) {
-		hasLeftover = true;
-		leftover = arr[i];
+	if (hasStraggler) {
+		PendNode node;
+		node.small = straggler;
+		node.partnerLarge = mainChain.back();
+		pend.push_back(node);
+	}
+}
+
+static std::vector<std::size_t> buildInsertionOrder(std::size_t pendSize) {
+	std::vector<std::size_t> order;
+	if (pendSize == 0)
+		return order;
+
+	std::vector<std::size_t> jacob;
+	jacob.push_back(1);
+	jacob.push_back(3);
+
+	while (jacob.back() < pendSize + 1) {
+		std::size_t next = jacob[jacob.size() - 1] + 2 * jacob[jacob.size() - 2];
+		jacob.push_back(next);
 	}
 
-	std::vector<int> winners;
-	winners.reserve(pairs.size());
-	for (std::size_t k = 0; k < pairs.size(); ++k)
-		winners.push_back(pairs[k].large);
+	std::size_t prev = 1;
+	for (std::size_t i = 1; i < jacob.size(); ++i) {
+		std::size_t curr = jacob[i];
+		std::size_t upper = std::min(curr - 1, pendSize + 1);
 
-	sortVector(winners);
+		for (std::size_t idx = upper; idx > prev; --idx)
+			order.push_back(idx - 2);
 
-	std::vector<int> chain = _sortedVector;
-	chain.reserve(arr.size());
+		prev = curr - 1;
+		if (prev >= pendSize + 1)
+			break;
+	}
 
-	for (std::size_t k = 0; k < pairs.size(); ++k) {
-		int value = pairs[k].small;
-		int partner = pairs[k].large;
+	std::vector<bool> used(pendSize, false);
+	for (std::size_t i = 0; i < order.size(); ++i) {
+		if (order[i] < pendSize)
+			used[order[i]] = true;
+	}
+
+	for (std::size_t i = pendSize; i > 0; --i) {
+		if (!used[i - 1])
+			order.push_back(i - 1);
+	}
+
+	return order;
+}
+
+static void insertPend(std::vector<int>& mainChain,
+						const std::vector<PendNode>& pend,
+						const std::vector<std::size_t>& order) {
+	for (std::size_t i = 0; i < order.size(); ++i) {
+		const PendNode& node = pend[order[i]];
 
 		std::vector<int>::iterator partnerIt =
-			std::find(chain.begin(), chain.end(), partner);
+			std::find(mainChain.begin(), mainChain.end(), node.partnerLarge);
 
 		std::vector<int>::iterator pos =
-			std::lower_bound(chain.begin(), partnerIt, value);
+			std::lower_bound(mainChain.begin(), partnerIt, node.small);
 
-		chain.insert(pos, value);
+		mainChain.insert(pos, node.small);
 	}
-
-	if (hasLeftover) {
-		std::vector<int>::iterator pos =
-			std::lower_bound(chain.begin(), chain.end(), leftover);
-		chain.insert(pos, leftover);
-	}
-
-	arr = chain;
-	_sortedVector = chain;
 }

@@ -1,5 +1,5 @@
-#ifndef CLASS_RPN_HPP
-# define CLASS_RPN_HPP
+#ifndef CLASS_PMERGEME_HPP
+# define CLASS_PMERGEME_HPP
 
 # include <vector>
 
@@ -8,10 +8,17 @@ struct Pair {
 	int large;
 };
 
+struct PendNode {
+	int small;
+	int partnerLarge;
+};
+
 class PmergeMe {
 	private:
 		// std::vector<Pair>	pairs;
-		std::vector<int>	_sortedVector;
+		std::vector<int> _sortedVector;
+
+		std::vector<int> fordJohnsonVector(const std::vector<int>& input);
 	public:
 		// Constractors
 		PmergeMe(void) = default;

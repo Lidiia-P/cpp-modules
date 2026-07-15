@@ -21,7 +21,7 @@
 // }
 
 int main (){
-	std::vector<int> arr {3, 5, 9, 7, 4};
+	std::vector<int> arr {7, 21, 49, 63, 37, 15, 45, 75, 23, 66, 99};
 	PmergeMe sort;
 
 	sort.sortVector(arr);
