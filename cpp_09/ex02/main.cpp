@@ -1,21 +1,34 @@
 #include "PmergeMe.hpp"
 #include <iostream>
 
-int main(int argc, char **argv)
-{
-	(void)argv;
-	if (argc < 2)
-	{
-		std::cout << "Invalid input! Usage: ./name numbers \n";
-		return 1;
-	}
+// int main(int argc, char **argv)
+// {
+// 	(void)argv;
+// 	if (argc < 2)
+// 	{
+// 		std::cout << "Invalid input! Usage: ./name numbers \n";
+// 		return 1;
+// 	}
 
-	try {
+// 	try {
 	
-	}
-	catch(const std::exception &e) {
-		std::cerr << e.what() << std::endl;
-		return 1;
-	}
+// 	}
+// 	catch(const std::exception &e) {
+// 		std::cerr << e.what() << std::endl;
+// 		return 1;
+// 	}
+// 	return 0;
+// }
+
+int main (){
+	std::vector<int> arr {3, 5, 9, 7, 4};
+	PmergeMe sort;
+
+	sort.sortVector(arr);
+	std::vector<int> sorted = sort.getData();
+	std::cout << "Print out sorted" << std::endl;
+	for (std::vector<int>::const_iterator it = sorted.begin(); it != sorted.end(); ++it)
+		std::cout << *it << ' ';
+	std::cout << std::endl;
 	return 0;
 }

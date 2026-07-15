@@ -1,11 +1,17 @@
 #ifndef CLASS_RPN_HPP
 # define CLASS_RPN_HPP
 
-// # include <stack>
+# include <vector>
+
+struct Pair {
+	int small;
+	int large;
+};
 
 class PmergeMe {
 	private:
-		// std::stack<int>	_data;
+		// std::vector<Pair>	pairs;
+		std::vector<int>	_sortedVector;
 	public:
 		// Constractors
 		PmergeMe(void) = default;
@@ -18,6 +24,8 @@ class PmergeMe {
 		~PmergeMe(void) = default;
 
 		// Member functions
+		void sortVector(std::vector<int> &arr);
+		const std::vector<int> &getData() const { return _sortedVector; }
 
 };
 
