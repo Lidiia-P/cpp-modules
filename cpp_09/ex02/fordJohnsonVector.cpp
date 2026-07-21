@@ -21,43 +21,43 @@ static void insertPend(std::vector<int>& mainChain,
 
 // -------------------- MEMBER FUNCTIONS PRIVATE --------------------
 
-std::vector<int> PmergeMe::fordJohnsonVector(const std::vector<int>& input) {
-    if (input.size() <= 1)
-        return input;
+	std::vector<int> PmergeMe::fordJohnsonVector(const std::vector<int>& input) {
+		if (input.size() <= 1)
+			return input;
 
-    // 1) Copy input and detach straggler if size is odd
-    std::vector<int> data = input;
-    std::optional<int> straggler;
+		// 1) Copy input and detach straggler if size is odd
+		std::vector<int> data = input;
+		std::optional<int> straggler;
 
-    if (data.size() % 2 != 0) {
-        straggler = data.back();
-        data.pop_back();
-    }
+		if (data.size() % 2 != 0) {
+			straggler = data.back();
+			data.pop_back();
+		}
 
-    // 2) Build pairs from even-sized 'data'
-    std::vector<Pair> pairs = makePairs(data);
+		// 2) Build pairs from even-sized 'data'
+		std::vector<Pair> pairs = makePairs(data);
 
-    std::vector<int> winners = extractWinners(pairs);
-    std::vector<int> sortedWinners = fordJohnsonVector(winners);
+		std::vector<int> winners = extractWinners(pairs);
+		std::vector<int> sortedWinners = fordJohnsonVector(winners);
 
-    std::vector<Pair> orderedPairs = orderPairsByWinners(pairs, sortedWinners);
+		std::vector<Pair> orderedPairs = orderPairsByWinners(pairs, sortedWinners);
 
-    std::vector<int> mainChain;
-    std::vector<PendNode> pend;
-    buildMainAndPend(orderedPairs, mainChain, pend); // no straggler params now
+		std::vector<int> mainChain;
+		std::vector<PendNode> pend;
+		buildMainAndPend(orderedPairs, mainChain, pend); // no straggler params now
 
-    std::vector<std::size_t> order = buildInsertionOrder(pend.size());
-    insertPend(mainChain, pend, order);
+		std::vector<std::size_t> order = buildInsertionOrder(pend.size());
+		insertPend(mainChain, pend, order);
 
-    // 3) Insert straggler at the very end with full-range lower_bound
-    if (straggler.has_value()) {
-        std::vector<int>::iterator pos =
-            std::lower_bound(mainChain.begin(), mainChain.end(), *straggler);
-        mainChain.insert(pos, *straggler);
-    }
+		// 3) Insert straggler at the very end with full-range lower_bound
+		if (straggler.has_value()) {
+			std::vector<int>::iterator pos =
+				std::lower_bound(mainChain.begin(), mainChain.end(), *straggler);
+			mainChain.insert(pos, *straggler);
+		}
 
-    return mainChain;
-}
+		return mainChain;
+	}
 
 // -------------------- HELPERS --------------------
 
