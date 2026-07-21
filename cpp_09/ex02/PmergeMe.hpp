@@ -2,6 +2,7 @@
 # define CLASS_PMERGEME_HPP
 
 # include <vector>
+# include <deque>
 
 struct Pair {
 	int small;
@@ -16,9 +17,11 @@ struct PendNode {
 class PmergeMe {
 	private:
 		// std::vector<Pair>	pairs;
-		std::vector<int> _sortedVector;
+		std::vector<int>	_sortedVector;
+		std::deque<int>		_sortedDeque;
 
-		std::vector<int> fordJohnsonVector(const std::vector<int>& input);
+		std::vector<int>	fordJohnsonVector(const std::vector<int>& input);
+		std::deque<int>		fordJohnsonDeque(const std::deque<int>& input);
 	public:
 		// Constractors
 		PmergeMe(void) = default;
@@ -32,7 +35,9 @@ class PmergeMe {
 
 		// Member functions
 		void sortVector(std::vector<int> &arr);
-		const std::vector<int> &getData() const { return _sortedVector; }
+		void sortDeque(std::deque<int> &deq);
+		const std::vector<int> &getVectorData() const { return _sortedVector; }
+		const std::deque<int> &getDequeData() const { return _sortedDeque; }
 
 };
 

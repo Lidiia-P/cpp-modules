@@ -4,7 +4,7 @@ YELLOW = \033[0;33m
 RESET = \033[0m
 
 NAME = PmergeMe
-SRC = main.cpp PmergeMe.cpp
+SRC = main.cpp PmergeMe.cpp fordJohnsonVector.cpp fordJohnsonDeque.cpp
 CPP = c++
 CFLAGS = -Wall -Wextra -Werror 
 CFLAGS += -std=c++17
